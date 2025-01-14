@@ -51,7 +51,7 @@ class AuthController {
                 http_response_code(401);
                 return json_encode(["message" => "Credenciales inválidas"]);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
             return json_encode(["message" => "Error en el servidor", "error" => $e->getMessage()]);
         }
