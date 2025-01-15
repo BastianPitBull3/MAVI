@@ -155,4 +155,50 @@
                 $.ajax({
                     url: `/api/clients/delete`,
                     method: 'DELETE',
- 
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id }),
+                    success: function (response) {
+                        alert(response.message);
+                        fetchClients();
+                    },
+                    error: function () {
+                        alert('Error al eliminar el cliente.');
+                    }
+                });
+            }
+        }
+
+        $('#clientForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const clientData = {
+                id: $('#clientId').val(),
+                name: $('#name').val(),
+                lastname: $('#lastname').val(),
+                email: $('#email').val(),
+                tel: $('#tel').val(),
+                address: $('#address').val()
+            };
+
+            const url = clientData.id ? '/api/clients/update' : '/api/clients/create';
+            const method = clientData.id ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: 'application/json',
+                data: JSON.stringify(clientData),
+                success: function (response) {
+                    alert(response.message);
+                    $('#clientModal').modal('hide');
+                    fetchClients();
+                },
+                error: function () {
+                    alert('Error al guardar el cliente.');
+                }
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,10 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../../../vendor/autoload.php'; 
+namespace App\Config;
 
 use Firebase\JWT\JWT;
-use Firebase\JWT\ExpiredException;
-use Firebase\JWT\SignatureInvalidException;
+use Firebase\JWT\Key;
 
 class JwtHandler {
     private $key;
@@ -21,7 +20,7 @@ class JwtHandler {
 
     public function generate_jwt($data) {
         $issuedAt = time();
-        $expirationTime = $issuedAt + 36000; // 10 horas
+        $expirationTime = $issuedAt + 3600; // 1 hora
         $payload = [
             "iss" => $this->issuer,
             "aud" => $this->audience,
@@ -33,24 +32,13 @@ class JwtHandler {
         return JWT::encode($payload, $this->key, $this->alg);
     }
 
-    /**
-     * @param string $jwt
-     * @return object|null
-     */
     public function validate_jwt($jwt) {
         try {
-            $decoded = JWT::decode($jwt, $this->key, $this->alg);
-            return (object) $decoded;
-        } catch (ExpiredException $e) {
-            // El token ha expirado
-            return null;
-        } catch (SignatureInvalidException $e) {
-            // La firma no es válida
-            return null;
+            $jwt = JWT::decode($jwt, new Key($this->key, $this->alg));
+            echo $jwt;
+            return $jwt; /* JWT::decode($jwt, new Key($this->key, $this->alg)); */
         } catch (\Exception $e) {
-            // Otro error
             return null;
         }
     }
 }
-

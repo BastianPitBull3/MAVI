@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Config;
+
+use PDO;  // Asegúrate de importar la clase PDO correctamente
+
 class DatabaseConnection {
     private $host;
     private $db;
@@ -32,7 +36,7 @@ class DatabaseConnection {
                 $dsn = "mysql:host={$this->host};dbname={$this->db}";
                 $this->pdo = new PDO($dsn, $this->user, $this->password);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 die("Conexión fallida: " . $e->getMessage());
             }
         }
@@ -49,21 +53,14 @@ class DatabaseConnection {
 
 // Uso de la clase DatabaseConnection
 $host = "localhost";
-$db = "MAVIcrudtest";
+$db = "mavicrudapi";
 $user = "root";
-$password = "RootPw1234!";
+$password = "";
 
-// Crear instancia de DatabaseConnection
 $dbConnection = new DatabaseConnection($host, $db, $user, $password);
 
 // Establecer la conexión
 $pdo = $dbConnection->connect();
 
-// Verificar la conexión (opcional)
-if ($pdo) {
-    echo "Conexión exitosa.";
-}
-
 // Cerrar la conexión (opcional)
 $dbConnection->disconnect();
-

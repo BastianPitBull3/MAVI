@@ -1,21 +1,6 @@
 <?php
-namespace App\Config;
-header('Access-Control-Allow-Origin: *');
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Authorization");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-header("Allow: GET, POST, OPTIONS, PUT, DELETE");
 
-$method = $_SERVER['REQUEST_METHOD'];
-if ($method == "OPTIONS") {
-    die();
-}
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-require_once __DIR__ . '/../../../config/DatabaseConnection.php';
-require_once __DIR__ . '/../Api/JwtHandler.php';
-require_once __DIR__ . '/../../../vendor/autoload.php';
+namespace App\Controllers;
 
 use App\Config\JwtHandler;
 
@@ -25,46 +10,35 @@ class AuthController {
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
-        $this->jwtHandler = new \JwtHandler();  // Instanciamos JwtHandler
+        $this->jwtHandler = new JwtHandler(); // Instancia de JWT
     }
 
-    /**
-     * Autentica un usuario y genera un token JWT.
-     * @param string $email
-     * @param string $password
-     * @return string JSON con el token o mensaje de error.
-     */
     public function login($email, $password) {
+        header('Content-Type: application/json');
+
         try {
             $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE email = :email");
             $stmt->execute(['email' => $email]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
-                // Usamos el JwtHandler para generar el token
+                // Generar token JWT
                 $jwt = $this->jwtHandler->generate_jwt([
                     "id" => $user['id'],
                     "email" => $user['email']
                 ]);
-                return json_encode(["token" => $jwt]);
+
+                echo "<h1>Success</h1>";
+
+                return json_encode(["success" => true, "token" => $jwt]);
             } else {
+                echo ":(";
                 http_response_code(401);
-                return json_encode(["message" => "Credenciales inválidas"]);
+                return json_encode(["success" => false, "message" => "Credenciales inválidas"]);
             }
         } catch (\Exception $e) {
             http_response_code(500);
-            return json_encode(["message" => "Error en el servidor", "error" => $e->getMessage()]);
+            return json_encode(["success" => false, "message" => "Error interno del servidor"]);
         }
     }
-}
-
-// Procesar la solicitud
-$data = json_decode(file_get_contents("php://input"));
-
-if (!empty($data->email) && !empty($data->password)) {
-    // Crear una instancia del controlador de autenticación
-    $authController = new AuthController($pdo);
-    echo $authController->login($data->email, $data->password);
-} else {
-    echo json_encode(["message" => "Por favor ingresa usuario y contraseña"]);
 }

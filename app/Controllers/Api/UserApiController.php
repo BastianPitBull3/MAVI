@@ -1,6 +1,7 @@
 <?php
 
-require_once __DIR__ . '../../../config/DatabaseConnection.php';
+require_once __DIR__ . '/../../../config/DatabaseConnection.php';
+require_once __DIR__ . '/../../Models/User.php';
 
 class UserApiController {
     private $pdo;
@@ -25,7 +26,7 @@ class UserApiController {
             $stmt = $this->pdo->prepare("INSERT INTO usuarios (email, password) VALUES (:email, :password)");
             $stmt->execute([
                 'email' => $user->getEmail(),
-                'password' => $user->getPassword()
+                'password' => $user->getPassword()  // Aquí se pasa la contraseña encriptada
             ]);
             return "Usuario creado exitosamente.";
         } catch (\PDOException $e) {
@@ -34,16 +35,25 @@ class UserApiController {
     }
 }
 
-// Crear un modelo de usuario
-$email = "admin2@example.com";
-$password = "pw1234";
+// Parámetros de la base de datos
+$host = "localhost";
+$db = "mavicrudapi";
 $dbuser = "root";
+$password = "";
 
-$db = new \DataBaseConnection($host, $db, $dbuser, $password);
+// Crear la conexión a la base de datos
+$conn = new \DatabaseConnection($host, $db, $dbuser, $password);
 
-// Crear instancia de UserCreator con la conexión PDO
-$userCreator = new UserApiController($db);
+// Crear la instancia del controlador
+$userController = new UserApiController($conn);
 
-// Crear usuario en la base de datos
-$result = $userApiController->createUser();
+// Crear un nuevo usuario
+$email = 'admin@example.com';  // Reemplaza con el email real
+$password = 'pw1234';  // Reemplaza con la contraseña real
+$user = new \User($email, $password);  // Crear el objeto User, la contraseña ya se encripta aquí
+
+// Llamar al método para crear el usuario en la base de datos
+$result = $userController->createUser($user);
+
+// Imprimir el resultado
 echo $result;

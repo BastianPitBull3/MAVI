@@ -37,11 +37,11 @@
         <form id="loginForm">
             <div class="mb-3">
                 <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" required>
+                <input type="email" class="form-control" value="admin@example.com" id="email" name="email" placeholder="Ingresa tu correo" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                <input type="password" class="form-control" value="pw1234" id="password" name="password" placeholder="Ingresa tu contraseña" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
         </form>
@@ -49,29 +49,36 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            $('#loginForm').on('submit', function (e) {
-                e.preventDefault();
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(event) {
+                event.preventDefault(); // Evita el envío tradicional del formulario
 
                 const email = $('#email').val();
                 const password = $('#password').val();
 
+                // Realiza una petición AJAX a la ruta absoluta del backend
                 $.ajax({
-                    url: '/api/login', // Cambia esto según tu ruta de API
+                    url: '../app/Controllers/Api/AuthController.php', // Ruta absoluta al controlador
                     type: 'POST',
-                    contentType: 'application/json',
+                    contentType: 'application/json', // Enviar datos como JSON
                     data: JSON.stringify({ email, password }),
-                    success: function (response) {
-                        // Guardar el token en localStorage y redirigir
-                        if (response.token) {
-                            localStorage.setItem('jwt_token', response.token);
-                            window.location.href = '/dashboard';
+                    success: function(response) {
+                        if (response.success) {
+                            $('#loginMessage').html('<div class="alert alert-success">Inicio de sesión exitoso. Redirigiendo...</div>');
+                            setTimeout(function() {
+                                window.location.href = "/dashboard"; // Redirige a la página de inicio
+                            }, 2000);
                         } else {
-                            $('#loginMessage').text(response.message).css('color', 'red');
+                            $('#loginMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
                         }
                     },
-                    error: function () {
-                        $('#loginMessage').text('Error al iniciar sesión. Inténtalo de nuevo.').css('color', 'red');
+                    error: function(jqXHR) {
+                        console.error("Error:", jqXHR);
+                        let errorMessage = "Ocurrió un error al procesar la solicitud.";
+                        if (jqXHR.status === 401) {
+                            errorMessage = "Credenciales inválidas.";
+                        }
+                        $('#loginMessage').html('<div class="alert alert-danger">' + errorMessage + '</div>');
                     }
                 });
             });
