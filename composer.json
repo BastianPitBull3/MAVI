@@ -1,0 +1,20 @@
+{
+    "name": "bastian/crud-api",
+    "description": "Un proyecto PHP para ejecutar acciones CRUD meadiante peticiones ajax a una API.",
+    "type": "project",
+    "require": {
+        "firebase/php-jwt": "^6.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bastian\\CrudApi\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Diego Valle",
+            "email": "dvallebenavides@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
