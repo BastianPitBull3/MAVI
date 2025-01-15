@@ -1,96 +1,59 @@
 <?php
-namespace App\Config;
+namespace App\Controllers;
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-require_once __DIR__ . '/../../../config/DatabaseConnection.php';
-require_once __DIR__ . '/./JwtHandler.php';
-require_once __DIR__ . '/../../../vendor/autoload.php';
+use App\Models\Client;
+use JwtHandler;
 
 class ClientApiController {
-    private $pdo;
+    private $cliente;
     private $jwtHandler;
-    private $db;
 
     public function __construct($db) {
-        $this->pdo = $db->connect();  // Usamos la conexión de DB
-        $this->jwtHandler = new \JwtHandler();
+        $this->cliente = new Client($db->connect());
+        $this->jwtHandler = new JwtHandler();
     }
 
-    public function validateJwt() {
+    private function validateJwt() {
         $headers = getallheaders();
         $jwt = isset($headers['Authorization']) ? str_replace('Bearer ', '', $headers['Authorization']) : null;
-        
-        if (!$jwt) {
-            echo json_encode(["message" => "Token no proporcionado"]);
-            http_response_code(401);  // Unauthorized
-            exit();
-        }
 
-        $decoded = $this->jwtHandler->validate_jwt($jwt);
-
-        if (!$decoded) {
+        if (!$jwt || !$this->jwtHandler->validate_jwt($jwt)) {
+            http_response_code(401);
             echo json_encode(["message" => "Token inválido o expirado"]);
-            http_response_code(401);  // Unauthorized
             exit();
         }
-
-        return $decoded;
-    }
-
-    public function getClients() {
-        // Corregir uso de PDO sin espacio de nombres
-        $stmt = $this->pdo->query("SELECT * FROM clientes");
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);  // Usar PDO de forma global
-    }
-
-    public function createClient($name, $lastname, $email, $tel, $address) {
-        $stmt = $this->pdo->prepare("INSERT INTO clientes (name, lastname, email, tel, address) VALUES (:name, :lastname, :email, :tel, :address)");
-        $stmt->execute(['name' => $name, 'lastname' => $lastname, 'email' => $email, 'tel' => $tel, 'address' => $address]);
-        return json_encode(["message" => "Cliente creado"]);
-    }
-
-    public function updateClient($id, $name, $lastname, $email, $tel, $address) {
-        $stmt = $this->pdo->prepare("UPDATE clientes SET name = :name, 
-                                                      lastname = :lastname, 
-                                                      email = :email, 
-                                                      tel = :tel, 
-                                                      address = :address 
-                                                      WHERE id = :id");
-        $stmt->execute(['name' => $name, 'lastname' => $lastname, 'email' => $email, 'tel' => $tel, 'address' => $address, 'id' => $id]);
-        return json_encode(["message" => "Cliente actualizado"]);
-    }
-
-    public function deleteClient($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM clientes WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        return json_encode(["message" => "Cliente eliminado"]);
     }
 
     public function handleRequest($action) {
-        // Validar el JWT antes de cualquier acción
         $this->validateJwt();
 
         switch ($action) {
             case 'get':
-                echo json_encode(["clients" => $this->getClients()]);
+                echo json_encode(["clients" => $this->cliente->obtenerTodos()]);
                 break;
+
             case 'create':
-                $data = json_decode(file_get_contents("php://input"));
-                echo $this->createClient($data->name, $data->lastname, $data->email, $data->tel, $data->address);
+                $data = json_decode(file_get_contents("php://input"), true);
+                $id = $this->cliente->crear($data['name'], $data['lastname'], $data['email'], $data['tel'], $data['address']);
+                echo json_encode(["message" => "Cliente creado", "id" => $id]);
                 break;
+
             case 'update':
-                $data = json_decode(file_get_contents("php://input"));
-                echo $this->updateClient($data->id, $data->name, $data->lastname, $data->email, $data->tel, $data->address);
+                $data = json_decode(file_get_contents("php://input"), true);
+                $this->cliente->actualizar($data['id'], $data['name'], $data['lastname'], $data['email'], $data['tel'], $data['address']);
+                echo json_encode(["message" => "Cliente actualizado"]);
                 break;
+
             case 'delete':
-                $data = json_decode(file_get_contents("php://input"));
-                echo $this->deleteClient($data->id);
+                $data = json_decode(file_get_contents("php://input"), true);
+                $this->cliente->eliminar($data['id']);
+                echo json_encode(["message" => "Cliente eliminado"]);
                 break;
+
             default:
+                http_response_code(400);
                 echo json_encode(["message" => "Acción no válida"]);
-                http_response_code(400);  // Bad Request
+                break;
         }
     }
 }

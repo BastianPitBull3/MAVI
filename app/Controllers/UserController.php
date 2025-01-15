@@ -37,13 +37,13 @@ class UserApiController {
 // Crear un modelo de usuario
 $email = "admin2@example.com";
 $password = "pw1234";
-$user = new \User($email, $password);
+$dbuser = "root";
 
-$db = new \DataBaseConnection($host, $db, $user, $password);
+$db = new \DataBaseConnection($host, $db, $dbuser, $password);
 
 // Crear instancia de UserCreator con la conexión PDO
 $userCreator = new UserApiController($db);
 
 // Crear usuario en la base de datos
-$result = $userCreator->createUser($user);
+$result = $userApiController->createUser();
 echo $result;
