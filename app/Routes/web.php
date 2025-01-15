@@ -1,13 +1,12 @@
 <<?php
 
 use App\Controllers\IndexController;
-use App\Controllers\ProductController;
+use App\Controllers\LoginController;
+use App\Controllers\DashboardController;
 
 // Definir las rutas
 return [
-    '/' => [IndexController::class, 'index'],            // Página principal
-    '/users' => [UserController::class, 'index'],       // Listar usuarios
-    '/users/create' => [UserController::class, 'create'], // Crear usuario
-    '/products' => [ProductController::class, 'index'], // Listar productos
-    '/products/create' => [ProductController::class, 'create'], // Crear producto
+    '/' => [IndexController::class, 'index'],
+    '/login' => [LoginController::class, 'login'],
+    '/dashboard' => [DashboardController::class, 'getClients']
 ];
