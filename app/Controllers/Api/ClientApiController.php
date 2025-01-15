@@ -4,18 +4,18 @@ namespace App\Config;
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../src/Config/DatabaseConnection.php';
-require_once __DIR__ . '/../src/Config/JwtHandler.php';
-require_once __DIR__ . '/../src/Config/vendor/autoload.php';
+require_once __DIR__ . '/../../../config/DatabaseConnection.php';
+require_once __DIR__ . '/./JwtHandler.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
-class ClientController {
+class ClientApiController {
     private $pdo;
     private $jwtHandler;
     private $db;
 
     public function __construct($db) {
         $this->pdo = $db->connect();  // Usamos la conexión de DB
-        $this->jwtHandler = new JwtHandler();
+        $this->jwtHandler = new \JwtHandler();
     }
 
     public function validateJwt() {

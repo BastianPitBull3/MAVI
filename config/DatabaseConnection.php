@@ -14,7 +14,7 @@ class DatabaseConnection {
      * @param string $user Usuario de la base de datos.
      * @param string $password Contraseña del usuario de la base de datos.
      */
-    public function __construct($host, $db, \User $user, $password) {
+    public function __construct($host, $db, $user, $password) {
         $this->host = $host;
         $this->db = $db;
         $this->user = $user;

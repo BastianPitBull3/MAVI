@@ -13,9 +13,9 @@ if ($method == "OPTIONS") {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../src/Config/DatabaseConnection.php';
-require_once __DIR__ . '/../src/Config/JwtHandler.php';
-require_once __DIR__ . '/../src/Config/vendor/autoload.php';
+require_once __DIR__ . '/../../../config/DatabaseConnection.php';
+require_once __DIR__ . '/../Api/JwtHandler.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use App\Config\JwtHandler;
 
@@ -25,7 +25,7 @@ class AuthController {
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
-        $this->jwtHandler = new JwtHandler();  // Instanciamos JwtHandler
+        $this->jwtHandler = new \JwtHandler();  // Instanciamos JwtHandler
     }
 
     /**
