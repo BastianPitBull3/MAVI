@@ -28,7 +28,7 @@ class DatabaseConnection {
     /**
      * Establece la conexión con la base de datos.
      * @return PDO Objeto PDO para interactuar con la base de datos.
-     * @throws PDOException Si ocurre un error al conectar.
+     * @throws \PDOException Si ocurre un error al conectar.
      */
     public function connect() {
         if ($this->pdo === null) {

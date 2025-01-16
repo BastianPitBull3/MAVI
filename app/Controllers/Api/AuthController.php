@@ -2,43 +2,34 @@
 
 namespace App\Controllers;
 
-use App\Config\JwtHandler;
-
 class AuthController {
     private $pdo;
-    private $jwtHandler;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
-        $this->jwtHandler = new JwtHandler(); // Instancia de JWT
     }
 
     public function login($email, $password) {
         header('Content-Type: application/json');
 
         try {
+            echo json_encode(["message" => "entra"]);
+            // Lógica para validar el correo (sin autenticación basada en contraseñas)
             $stmt = $this->pdo->prepare("SELECT * FROM usuarios WHERE email = :email");
             $stmt->execute(['email' => $email]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Generar token JWT
-                $jwt = $this->jwtHandler->generate_jwt([
-                    "id" => $user['id'],
-                    "email" => $user['email']
-                ]);
-
-                echo "<h1>Success</h1>";
-
-                return json_encode(["success" => true, "token" => $jwt]);
+            if ($user) {
+                // Si el usuario existe, devuelve una respuesta de éxito simple
+                echo json_encode(["success" => true, "message" => "Bienvenido, " . $user['email']]);
             } else {
-                echo ":(";
-                http_response_code(401);
-                return json_encode(["success" => false, "message" => "Credenciales inválidas"]);
+                // Si el usuario no existe, devuelve un mensaje de error
+                http_response_code(404);
+                echo json_encode(["success" => false, "message" => "Usuario no encontrado"]);
             }
         } catch (\Exception $e) {
             http_response_code(500);
-            return json_encode(["success" => false, "message" => "Error interno del servidor"]);
+            echo json_encode(["success" => false, "message" => "Error interno del servidor"]);
         }
     }
 }

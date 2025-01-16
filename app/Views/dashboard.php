@@ -105,9 +105,10 @@
 
         function fetchClients() {
             $.ajax({
-                url: '/api/clients', // Cambia esto según tu ruta de la API
+                url: 'http://localhost:80/CRUD-API/app/Controllers/Api/ClientApiController.php?action=get', // Cambia esto según tu ruta de la API
                 method: 'GET',
                 success: function (response) {
+                    console.log(response);
                     let rows = '';
                     response.clients.forEach(client => {
                         rows += `

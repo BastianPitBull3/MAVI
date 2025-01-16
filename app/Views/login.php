@@ -51,17 +51,16 @@
     <script>
         $(document).ready(function() {
             $('#loginForm').on('submit', function(event) {
-                event.preventDefault(); // Evita el envío tradicional del formulario
+                event.preventDefault(); 
 
                 const email = $('#email').val();
                 const password = $('#password').val();
 
-                // Realiza una petición AJAX a la ruta absoluta del backend
                 $.ajax({
-                    url: '../app/Controllers/Api/AuthController.php', // Ruta absoluta al controlador
+                    url: 'http://localhost:80/CRUD-API/app/Controllers/Api/auth.php', 
                     type: 'POST',
-                    contentType: 'application/json', // Enviar datos como JSON
-                    data: JSON.stringify({ email, password }),
+                    contentType: 'application/json', 
+                    data: JSON.stringify({ email, password }), 
                     success: function(response) {
                         if (response.success) {
                             $('#loginMessage').html('<div class="alert alert-success">Inicio de sesión exitoso. Redirigiendo...</div>');
@@ -75,8 +74,8 @@
                     error: function(jqXHR) {
                         console.error("Error:", jqXHR);
                         let errorMessage = "Ocurrió un error al procesar la solicitud.";
-                        if (jqXHR.status === 401) {
-                            errorMessage = "Credenciales inválidas.";
+                        if (jqXHR.status === 404) {
+                            errorMessage = "Usuario no encontrado.";
                         }
                         $('#loginMessage').html('<div class="alert alert-danger">' + errorMessage + '</div>');
                     }
