@@ -1,6 +1,6 @@
 <?php
 
-require_once '../vendor/autoload.php'; // Autoload con Composer
+require_once '../vendor/autoload.php';
 
 use App\Controllers\IndexController;
 

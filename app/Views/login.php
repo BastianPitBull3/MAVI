@@ -4,32 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de Sesión</title>
+    <link href="./css/login.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #6c63ff, #c3cfe2);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .login-card {
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-        .btn-primary {
-            background: #6c63ff;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #4b47d0;
-        }
-    </style>
 </head>
 <body>
     <div class="login-card">
@@ -47,41 +24,6 @@
         </form>
         <div id="loginMessage" class="mt-3 text-center"></div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            $('#loginForm').on('submit', function(event) {
-                event.preventDefault(); 
-
-                const email = $('#email').val();
-                const password = $('#password').val();
-
-                $.ajax({
-                    url: 'http://localhost:80/CRUD-API/app/Controllers/Api/auth.php', 
-                    type: 'POST',
-                    contentType: 'application/json', 
-                    data: JSON.stringify({ email, password }), 
-                    success: function(response) {
-                        if (response.success) {
-                            $('#loginMessage').html('<div class="alert alert-success">Inicio de sesión exitoso. Redirigiendo...</div>');
-                            setTimeout(function() {
-                                window.location.href = "/dashboard"; // Redirige a la página de inicio
-                            }, 2000);
-                        } else {
-                            $('#loginMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
-                        }
-                    },
-                    error: function(jqXHR) {
-                        console.error("Error:", jqXHR);
-                        let errorMessage = "Ocurrió un error al procesar la solicitud.";
-                        if (jqXHR.status === 404) {
-                            errorMessage = "Usuario no encontrado.";
-                        }
-                        $('#loginMessage').html('<div class="alert alert-danger">' + errorMessage + '</div>');
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="./login.js"></script>
 </body>
 </html>

@@ -1,31 +1,63 @@
 <?php
+
 namespace App\Models;
 
+require_once __DIR__ ."/../Config/DatabaseConnection.php";
+
 class Client {
+
+    private $dbConn;
     private $pdo;
 
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
+    public function __construct() {
+        $this->dbConn = new \App\Config\DatabaseConnection();
+        $this->pdo = $this->dbConn->connect();
     }
 
-    public function obtenerTodos() {
+    public function getAll() {
         $stmt = $this->pdo->query("SELECT * FROM clientes");
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll($this->pdo::FETCH_ASSOC);
+        $this->dbConn->disconnect();
+        return $result;
     }
 
-    public function crear($name, $lastname, $email, $tel, $address) {
-        $stmt = $this->pdo->prepare("INSERT INTO clientes (name, lastname, email, tel, address) VALUES (:name, :lastname, :email, :tel, :address)");
-        $stmt->execute(compact('name', 'lastname', 'email', 'tel', 'address'));
-        return $this->pdo->lastInsertId();
+    public function create($name, $lastname, $email, $address) {
+        $stmt = $this->pdo->prepare("
+            INSERT INTO clientes (name, lastname, email, address) 
+            VALUES (:name, :lastname, :email, :address)
+        ");
+        $stmt->execute([
+            'name' => $name,
+            'lastname' => $lastname,
+            'email' => $email,
+            'address' => $address
+        ]);
+        $result = $this->pdo->lastInsertId();
+        $this->dbConn->disconnect();
+        return $result;
     }
 
-    public function actualizar($id, $name, $lastname, $email, $tel, $address) {
-        $stmt = $this->pdo->prepare("UPDATE clientes SET name = :name, lastname = :lastname, email = :email, tel = :tel, address = :address WHERE id = :id");
-        return $stmt->execute(compact('id', 'name', 'lastname', 'email', 'tel', 'address'));
+    public function update($id, $name, $lastname, $email, $address) {
+        $stmt = $this->pdo->prepare("
+            UPDATE clientes 
+            SET name = :name, lastname = :lastname, email = :email, address = :address 
+            WHERE id = :id
+        ");
+        $result = $stmt->execute([
+            'name' => $name,
+            'lastname' => $lastname,
+            'email' => $email,
+            'address' => $address,
+            'id' => $id
+        ]);
+        $this->dbConn->disconnect();
+        return $result;
     }
 
-    public function eliminar($id) {
+    public function delete($id) {
         $stmt = $this->pdo->prepare("DELETE FROM clientes WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $result = $stmt->execute(['id' => $id]);
+        $this->dbConn->disconnect();
+        return $result;
     }
 }

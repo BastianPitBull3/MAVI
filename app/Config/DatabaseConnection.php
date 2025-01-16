@@ -2,9 +2,11 @@
 
 namespace App\Config;
 
-use PDO;  // Asegúrate de importar la clase PDO correctamente
+use PDO;
+require_once __DIR__ . "/../env/Env.php";
 
 class DatabaseConnection {
+    private $dsn;
     private $host;
     private $db;
     private $user;
@@ -12,55 +14,35 @@ class DatabaseConnection {
     private $pdo;
 
     /**
-     * Constructor para inicializar los datos de conexión.
-     * @param string $host Host de la base de datos.
-     * @param string $db Nombre de la base de datos.
-     * @param string $user Usuario de la base de datos.
-     * @param string $password Contraseña del usuario de la base de datos.
+     * Inicializa los datos de conexión.
      */
-    public function __construct($host, $db, $user, $password) {
-        $this->host = $host;
-        $this->db = $db;
-        $this->user = $user;
-        $this->password = $password;
+    public function __construct() {
+        $this->dsn = new \App\env\Env();
+        $this->host = $this->dsn->params()['host'];
+        $this->db = $this->dsn->params()['db'];
+        $this->user = $this->dsn->params()['user'];
+        $this->password = $this->dsn->params()['password'];
     }
 
     /**
-     * Establece la conexión con la base de datos.
-     * @return PDO Objeto PDO para interactuar con la base de datos.
-     * @throws \PDOException Si ocurre un error al conectar.
+     * Establece y retorna la conexión con la base de datos.
      */
     public function connect() {
-        if ($this->pdo === null) {
             try {
                 $dsn = "mysql:host={$this->host};dbname={$this->db}";
                 $this->pdo = new PDO($dsn, $this->user, $this->password);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                json_encode(['message' => 'Conexión exitosa']);
             } catch (\PDOException $e) {
                 die("Conexión fallida: " . $e->getMessage());
             }
-        }
         return $this->pdo;
     }
 
     /**
-     * Cierra la conexión a la base de datos.
+     * Cierra la conexión activa con la base de datos.
      */
     public function disconnect() {
         $this->pdo = null;
     }
 }
-
-// Uso de la clase DatabaseConnection
-$host = "localhost";
-$db = "mavicrudapi";
-$user = "root";
-$password = "";
-
-$dbConnection = new DatabaseConnection($host, $db, $user, $password);
-
-// Establecer la conexión
-$pdo = $dbConnection->connect();
-
-// Cerrar la conexión (opcional)
-$dbConnection->disconnect();

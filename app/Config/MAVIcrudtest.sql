@@ -24,11 +24,11 @@ DROP TABLE IF EXISTS `clientes`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `clientes` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `lastname` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
-  `direccion` text,
-  `fecha_registro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `address` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -54,7 +54,7 @@ CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(150) NOT NULL,
   `password` varchar(100) NOT NULL,
-  `fecha_registro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

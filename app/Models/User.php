@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Models;
+
 class User {
     private $email;
     private $password;
@@ -14,16 +17,14 @@ class User {
     }
 
     /**
-     * Obtiene el correo electrónico del usuario.
-     * @return string Correo electrónico.
+     * @return string Obtiene el correo electrónico del usuario.
      */
     public function getEmail() {
         return $this->email;
     }
 
     /**
-     * Obtiene la contraseña encriptada del usuario.
-     * @return string Contraseña encriptada.
+     * @return string Obtiene la contraseña encriptada del usuario.
      */
     public function getPassword() {
         return $this->password;
